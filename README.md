@@ -1,4 +1,98 @@
-Находясь в папке infra, выполните команду docker-compose up. При выполнении этой команды контейнер frontend, описанный в docker-compose.yml, подготовит файлы, необходимые для работы фронтенд-приложения, а затем прекратит свою работу.
+# Foodgram - «Продуктовый помощник»
 
-По адресу http://localhost изучите фронтенд веб-приложения, а по адресу http://localhost/api/docs/ — спецификацию API.
+[![Foodgram workflow](https://github.com/Creeprus/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)](https://github.com/Creeprus/foodgram-project-react/actions/workflows/foodgram_workflow.yml)
 
+## Описание проекта
+
+«Продуктовый помощник» — онлайн-сервис и API для него. На этом сервисе пользователи могут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд.
+
+## Функциональность
+
+- Регистрация пользователей и авторизация
+- Создание, редактирование и удаление рецептов (для авторов)
+- Просмотр рецептов всеми пользователями
+- Подписка на авторов рецептов
+- Добавление рецептов в избранное
+- Добавление рецептов в список покупок
+- Скачивание списка покупок в формате PDF
+- Фильтрация рецептов по тегам
+- Административный интерфейс для управления данными
+
+## Технологии
+
+- Python 3.7
+- Django 3.2
+- Django REST Framework
+- PostgreSQL
+- Docker
+- Nginx
+- GitHub Actions
+
+## Подготовка и запуск проекта
+
+### Предварительные требования
+
+- Docker
+- Docker Compose
+
+### Запуск проекта
+
+1. Клонируйте репозиторий:
+   ```
+   git clone https://github.com/Creeprus/foodgram-st.git
+   cd foodgram-project-react
+   ```
+
+2. Создайте файл .env в директории infra/ и заполните его переменными окружения:
+   ```
+   DB_ENGINE=django.db.backends.postgresql
+   DB_NAME=postgres
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=postgres
+   DB_HOST=db
+   DB_PORT=5432
+   DEBUG=False
+   SECRET_KEY=your-secret-key-here
+   ALLOWED_HOSTS=127.0.0.1,localhost,backend,foodgram
+   ```
+
+3. Запустите Docker Compose:
+   ```
+   cd infra
+   docker-compose up -d
+   ```
+
+4. Выполните миграции, создайте суперпользователя и загрузите ингредиенты:
+   ```
+   docker-compose exec backend python manage.py migrate
+   docker-compose exec backend python manage.py createsuperuser
+   docker-compose exec backend python manage.py import_ingredients /app/data/ingredients.json
+   ```
+
+5. Проект будет доступен по адресу http://localhost/
+
+### Для разработчиков
+
+1. Установите зависимости в виртуальном окружении:
+   ```
+   cd backend
+   python -m venv venv
+   source venv/bin/activate  # для Linux/macOS
+   # или
+   venv\Scripts\activate     # для Windows
+   pip install -r requirements.txt
+   ```
+
+2. Запустите проект в режиме разработки:
+   ```
+   cd foodgram
+   python manage.py runserver
+   ```
+
+## Документация API
+
+После запуска проекта документация доступна по адресу http://localhost/api/docs/
+
+## Автор
+
+- [Корниенко Лев](https://github.com/Creeprus)
