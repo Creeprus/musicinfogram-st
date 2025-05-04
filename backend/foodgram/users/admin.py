@@ -21,4 +21,4 @@ class SubscriptionAdmin(admin.ModelAdmin):
     """Панель управления подписками."""
     list_display = ('id', 'user', 'author')
     list_filter = ('user', 'author')
-    search_fields = ('user__username', 'author__username') 
+    search_fields = ('user__username', 'author__username')
