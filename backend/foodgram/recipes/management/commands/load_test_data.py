@@ -27,7 +27,8 @@ class Command(BaseCommand):
             {'name': 'Обед', 'color': '#49B64E', 'slug': 'lunch'},
             {'name': 'Ужин', 'color': '#8775D2', 'slug': 'dinner'},
             {'name': 'Десерт', 'color': '#FF0099', 'slug': 'dessert'},
-            {'name': 'Вегетарианское', 'color': '#33CCCC', 'slug': 'vegetarian'}
+            {'name': 'Вегетарианское', 'color': '#33CCCC',
+             'slug': 'vegetarian'}
         ]
 
         for tag_data in tags:
@@ -118,7 +119,8 @@ class Command(BaseCommand):
                         (ingredients[5], 50),
                         (ingredients[6], 2)
                     ],
-                    'tags': [Tag.objects.get(slug='lunch'), Tag.objects.get(slug='dinner')]
+                    'tags': [Tag.objects.get(slug='lunch'),
+                             Tag.objects.get(slug='dinner')]
                 },
                 {
                     'name': 'Салат "Цезарь"',

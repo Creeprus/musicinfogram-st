@@ -229,7 +229,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             amount = ingredient['amount']
 
             p.drawString(
-                50, y_position, 
+                50, y_position,
                 f"{name} — {amount} {measurement_unit}"
             )
             y_position -= 25

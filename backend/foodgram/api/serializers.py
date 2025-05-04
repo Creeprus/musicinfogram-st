@@ -1,6 +1,6 @@
 from djoser.serializers import (
-    DjoserUserCreateSerializer,
-    DjoserUserSerializer
+    UserCreateSerializer as DjoserUserCreateSerializer,
+    UserSerializer as DjoserUserSerializer,
 )
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
@@ -286,7 +286,8 @@ class FavoriteSerializer(serializers.ModelSerializer):
         ]
 
     def to_representation(self, instance):
-        """Преобразует объект Favorite в представление RecipeShortSerializer."""
+        """Преобразует объект Favorite в представление
+        RecipeShortSerializer."""
         return RecipeShortSerializer(
             instance.recipe,
             context={'request': self.context.get('request')}

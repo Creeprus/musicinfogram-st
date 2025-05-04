@@ -1,9 +1,7 @@
 import csv
 import json
 import os
-from pathlib import Path
 
-from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from recipes.models import Ingredient
@@ -23,7 +21,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         file_path = options['file_path']
         file_extension = os.path.splitext(file_path)[1].lower()
-        
+
         try:
             if file_extension == '.csv':
                 self.import_from_csv(file_path)
