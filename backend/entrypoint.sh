@@ -18,6 +18,7 @@ python foodgram/manage.py shell -c "from users.models import User; User.objects.
 # Import ingredients from JSON file if needed
 if [ -f "data/ingredients.json" ]; then
     python foodgram/manage.py import_ingredients data/ingredients.json
+    python foodgram/manage.py load_test_data
 fi
 
 # Start server
