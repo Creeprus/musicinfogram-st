@@ -3,7 +3,7 @@ from rest_framework import permissions
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     """
-    Разрешает чтение всем пользователям, 
+    Разрешает чтение всем пользователям,
     а запись только владельцам объекта.
     """
     def has_permission(self, request, view):
@@ -16,4 +16,4 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
         return (
             request.method in permissions.SAFE_METHODS
             or obj.author == request.user
-        ) 
+        )

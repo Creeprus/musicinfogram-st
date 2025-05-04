@@ -1,6 +1,6 @@
 # Foodgram - «Продуктовый помощник»
 
-[![Foodgram workflow](https://github.com/Creeprus/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)](https://github.com/Creeprus/foodgram-project-react/actions/workflows/foodgram_workflow.yml)
+[![Foodgram workflow](https://github.com/Creeprus/foodgram-st/actions/workflows/foodgram_workflow.yml)](https://github.com/Creeprus/foodgram-st/actions/workflows/foodgram_workflow.yml)
 
 ## Описание проекта
 
@@ -39,8 +39,8 @@
 
 1. Клонируйте репозиторий:
    ```
-   git clone https://github.com/Creeprus/foodgram-st.git
-   cd foodgram-project-react
+   git clone https://github.com/Creeprus/foodgram-st
+   cd foodgram-st
    ```
 
 2. Создайте файл .env в директории infra/ и заполните его переменными окружения:
@@ -62,14 +62,7 @@
    docker-compose up -d
    ```
 
-4. Выполните миграции, создайте суперпользователя и загрузите ингредиенты:
-   ```
-   docker-compose exec backend python manage.py migrate
-   docker-compose exec backend python manage.py createsuperuser
-   docker-compose exec backend python manage.py import_ingredients /app/data/ingredients.json
-   ```
-
-5. Проект будет доступен по адресу http://localhost/
+4. Проект будет доступен по адресу http://localhost/
 
 ### Для разработчиков
 

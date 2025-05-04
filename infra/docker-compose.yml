@@ -6,19 +6,20 @@ services:
     image: postgres:13.0-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - ./.env
+    env_file: .env
     restart: always
 
   backend:
     container_name: foodgram-backend
-    image: leaderofthebadgers/foodgram-backend:latest
+    #image: leaderofthebadgers/foodgram-backend:latest
+    build: ../backend/
     restart: always
     depends_on:
       - db
     env_file:
       - ./.env
     volumes:
+      - ../data:/app/data
       - static_value:/app/static/
       - media_value:/app/media/
       - fonts:/app/fonts/

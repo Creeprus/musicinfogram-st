@@ -1,5 +1,7 @@
-from djoser.serializers import UserCreateSerializer as DjoserUserCreateSerializer
-from djoser.serializers import UserSerializer as DjoserUserSerializer
+from djoser.serializers import (
+    DjoserUserCreateSerializer,
+    DjoserUserSerializer
+)
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
@@ -138,7 +140,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Необходимо указать хотя бы один ингредиент'
             )
-        
+
         ingredients_list = []
         for ingredient in ingredients:
             if int(ingredient['amount']) <= 0:
@@ -146,28 +148,28 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
                     'Количество ингредиента должно быть больше 0'
                 )
             ingredients_list.append(ingredient['id'])
-            
+
         if len(ingredients_list) != len(set(ingredients_list)):
             raise serializers.ValidationError(
                 'Ингредиенты не должны повторяться'
             )
-            
+
         tags = self.initial_data.get('tags')
         if not tags:
             raise serializers.ValidationError(
                 'Необходимо указать хотя бы один тег'
             )
-            
+
         if len(tags) != len(set(tags)):
             raise serializers.ValidationError(
                 'Теги не должны повторяться'
             )
-            
+
         if int(data['cooking_time']) <= 0:
             raise serializers.ValidationError(
                 'Время приготовления должно быть больше 0'
             )
-            
+
         return data
 
     def create_ingredients(self, ingredients, recipe):
@@ -199,8 +201,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         """Обновляет рецепт."""
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        
-        # Обновление основных полей
+
         instance.name = validated_data.get('name', instance.name)
         instance.text = validated_data.get('text', instance.text)
         instance.cooking_time = validated_data.get(
@@ -208,15 +209,13 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         )
         if 'image' in validated_data:
             instance.image = validated_data.get('image')
-        
-        # Обновление тегов
+
         instance.tags.clear()
         instance.tags.set(tags)
-        
-        # Обновление ингредиентов
+
         instance.ingredients.clear()
         self.create_ingredients(ingredients, instance)
-        
+
         instance.save()
         return instance
 
@@ -308,8 +307,9 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         ]
 
     def to_representation(self, instance):
-        """Преобразует объект ShoppingCart в представление RecipeShortSerializer."""
+        """Преобразует объект ShoppingCart в представление
+          RecipeShortSerializer."""
         return RecipeShortSerializer(
             instance.recipe,
             context={'request': self.context.get('request')}
-        ).data 
+        ).data

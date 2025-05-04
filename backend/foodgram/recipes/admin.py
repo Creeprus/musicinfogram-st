@@ -65,4 +65,4 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     """Панель управления списком покупок."""
     list_display = ('id', 'user', 'recipe')
     search_fields = ('user__username', 'recipe__name')
-    list_filter = ('user', 'recipe') 
+    list_filter = ('user', 'recipe')

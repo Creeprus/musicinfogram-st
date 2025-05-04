@@ -21,8 +21,7 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **options):
         self.stdout.write('Создание тестовых данных...')
-        
-        # Создание тегов
+
         tags = [
             {'name': 'Завтрак', 'color': '#E26C2D', 'slug': 'breakfast'},
             {'name': 'Обед', 'color': '#49B64E', 'slug': 'lunch'},
@@ -30,24 +29,22 @@ class Command(BaseCommand):
             {'name': 'Десерт', 'color': '#FF0099', 'slug': 'dessert'},
             {'name': 'Вегетарианское', 'color': '#33CCCC', 'slug': 'vegetarian'}
         ]
-        
+
         for tag_data in tags:
             Tag.objects.get_or_create(
                 slug=tag_data['slug'],
                 defaults=tag_data
             )
-        
+
         self.stdout.write(self.style.SUCCESS('Теги созданы'))
-        
-        # Проверка наличия ингредиентов
+
         if Ingredient.objects.count() == 0 and not options['no_ingredients']:
             self.stdout.write(
                 'Ингредиенты отсутствуют. '
                 'Воспользуйтесь командой import_ingredients для их загрузки.'
             )
             return
-        
-        # Создание пользователей
+
         users = [
             {
                 'username': 'admin',
@@ -71,7 +68,7 @@ class Command(BaseCommand):
                 'password': 'user2pass'
             }
         ]
-        
+
         created_users = []
         for user_data in users:
             user, created = User.objects.get_or_create(
@@ -82,14 +79,13 @@ class Command(BaseCommand):
                 user.set_password(user_data['password'])
                 user.save()
             created_users.append(user)
-            
+
         self.stdout.write(self.style.SUCCESS('Пользователи созданы'))
-        
-        # Создание рецептов
+
         if not options['no_ingredients'] and Ingredient.objects.exists():
             # Получаем первые несколько ингредиентов для тестовых рецептов
             ingredients = list(Ingredient.objects.all()[:20])
-            
+
             recipes_data = [
                 {
                     'name': 'Омлет с сыром',
@@ -142,7 +138,7 @@ class Command(BaseCommand):
                     'tags': [Tag.objects.get(slug='lunch')]
                 }
             ]
-            
+
             for recipe_data in recipes_data:
                 recipe = Recipe.objects.create(
                     name=recipe_data['name'],
@@ -150,11 +146,9 @@ class Command(BaseCommand):
                     cooking_time=recipe_data['cooking_time'],
                     author=recipe_data['author']
                 )
-                
-                # Добавление тегов
+
                 recipe.tags.set(recipe_data['tags'])
-                
-                # Добавление ингредиентов
+
                 recipe_ingredients = []
                 for ingredient, amount in recipe_data['ingredients']:
                     recipe_ingredients.append(
@@ -165,9 +159,9 @@ class Command(BaseCommand):
                         )
                     )
                 RecipeIngredient.objects.bulk_create(recipe_ingredients)
-                
+
             self.stdout.write(self.style.SUCCESS('Рецепты созданы'))
-        
+
         self.stdout.write(
             self.style.SUCCESS('Тестовые данные успешно созданы')
-        ) 
+        )

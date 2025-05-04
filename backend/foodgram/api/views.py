@@ -54,7 +54,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
                     {'errors': 'Вы уже подписаны на этого пользователя'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            subscription = Subscription.objects.create(user=user, author=author)
+            subscription = Subscription.objects.create(user=user,
+                                                       author=author)
             serializer = SubscriptionSerializer(
                 subscription, context={'request': request}
             )
@@ -212,33 +213,27 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'attachment; filename="shopping_list.pdf"'
         )
 
-        # Создание PDF документа
         p = canvas.Canvas(response)
 
-        # Регистрация шрифта для поддержки кириллицы
         pdfmetrics.registerFont(TTFont('DejaVuSans', 'DejaVuSans.ttf'))
         p.setFont('DejaVuSans', 14)
 
-        # Заголовок документа
         p.drawString(200, 800, 'Список покупок')
         p.setFont('DejaVuSans', 12)
-        
-        # Отступы
+
         y_position = 750
-        
-        # Добавление ингредиентов в PDF
+
         for ingredient in ingredients:
             name = ingredient['ingredient__name']
             measurement_unit = ingredient['ingredient__measurement_unit']
             amount = ingredient['amount']
-            
+
             p.drawString(
                 50, y_position, 
                 f"{name} — {amount} {measurement_unit}"
             )
             y_position -= 25
-            
-            # Проверка, нужна ли новая страница
+
             if y_position <= 50:
                 p.showPage()
                 p.setFont('DejaVuSans', 12)
@@ -246,5 +241,5 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         p.showPage()
         p.save()
-        
-        return response 
+
+        return response

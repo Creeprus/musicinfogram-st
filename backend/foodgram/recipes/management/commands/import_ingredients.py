@@ -52,7 +52,8 @@ class Command(BaseCommand):
                 for row in reader:
                     name, measurement_unit = row
                     ingredients.append(
-                        Ingredient(name=name, measurement_unit=measurement_unit)
+                        Ingredient(name=name,
+                                   measurement_unit=measurement_unit)
                     )
                 Ingredient.objects.bulk_create(
                     ingredients, ignore_conflicts=True
@@ -79,7 +80,8 @@ class Command(BaseCommand):
                             'В JSON файле отсутствуют обязательные поля'
                         )
                     ingredients.append(
-                        Ingredient(name=name, measurement_unit=measurement_unit)
+                        Ingredient(name=name,
+                                   measurement_unit=measurement_unit)
                     )
                 Ingredient.objects.bulk_create(
                     ingredients, ignore_conflicts=True
@@ -87,4 +89,4 @@ class Command(BaseCommand):
         except FileNotFoundError:
             raise CommandError(f'Файл {file_path} не найден')
         except json.JSONDecodeError:
-            raise CommandError('Неверный формат JSON файла') 
+            raise CommandError('Неверный формат JSON файла')
