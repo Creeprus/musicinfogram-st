@@ -15,7 +15,6 @@
 - Добавление рецептов в избранное
 - Добавление рецептов в список покупок
 - Скачивание списка покупок в формате PDF
-- Фильтрация рецептов по тегам
 - Административный интерфейс для управления данными
 
 ## Технологии
@@ -52,17 +51,16 @@
    DB_HOST=db
    DB_PORT=5432
    DEBUG=False
-   SECRET_KEY=your-secret-key-here
    ALLOWED_HOSTS=127.0.0.1,localhost,backend,foodgram
    ```
 
 3. Запустите Docker Compose:
    ```
    cd infra
-   docker-compose up -d
+   docker-compose up -d --build
    ```
 
-4. Проект будет доступен по адресу http://localhost/
+4. Проект будет доступен по адресу http://localhost/ или 127.0.0.1:80/
 
 ### Для разработчиков
 
