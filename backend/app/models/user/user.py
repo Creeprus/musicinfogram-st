@@ -8,7 +8,8 @@ class User(AbstractUser):
     Класс для взаимодейтсвия с данными пользователя.
 
     :param email (EmailField): Уникальный email пользователя
-    :param username (CharField): Уникальное имя пользователя с валидацией символов
+    :param username (CharField): Уникальное имя пользователя
+    с валидацией символов
     :param first_name (CharField): Имя пользователя
     :param last_name (CharField): Фамилия пользователя
     :param avatar (ImageField): Аватар пользователя (опционально)

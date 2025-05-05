@@ -7,7 +7,7 @@ class AppConfig(AppConfig):
     name = 'app'
     verbose_name = 'App'
 
-    def ready(self):
-        """Импортирование сигналов и админки."""
-        import app.models.signals
-        import app.admin
+    # def ready(self):
+    #     """Импортирование сигналов и админки."""
+    #     import app.models.signals
+    #     import app.admin
