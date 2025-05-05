@@ -9,6 +9,10 @@ export default [
     title: 'Создать рецепт',
     href: '/recipes/create',
     auth: true
+  }, {
+    title: 'О проекте',
+    href: '/about',
+    auth: false
   }
 ]
 

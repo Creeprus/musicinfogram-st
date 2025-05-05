@@ -7,7 +7,7 @@ import api from "./api";
 import styles from "./styles.module.css";
 
 import {
-  // About,
+  About,
   Main,
   Cart,
   SignIn,
@@ -22,7 +22,7 @@ import {
   NotFound,
   UpdateAvatar,
   ResetPassword,
-  // Technologies,
+  Technologies,
 } from "./pages";
 
 import { AuthContext, UserContext } from "./contexts";
@@ -294,8 +294,9 @@ function App() {
             </Route>
 
             <Route exact path="/about">
-              <NotFound />
-              {/* <About component={About} /> */}
+              {/*   <NotFound />  */}
+              {/*  Тут убрать NotFound  */}
+              <About component={About} />
             </Route>
 
             <Route exact path="/reset-password">
@@ -303,8 +304,11 @@ function App() {
             </Route>
 
             <Route exact path="/technologies">
-              <NotFound />
-              {/* <Technologies component={Technologies}/> */}
+              {/*   <NotFound />  */}
+              {/*  Тут убрать NotFound  */}
+              <Technologies component={Technologies}/>
+              {/*  ХАХА, НАШЕЛ ГДЕ ТЕБЯ ВКЛЮЧИТЬ  */}
+             
             </Route>
 
             <Route exact path="/recipes">

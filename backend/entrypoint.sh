@@ -1,26 +1,19 @@
 #!/bin/bash
+echo "Ожидание базы..."
+sleep 2
 
-# Wait for database to be ready
-echo "Waiting for database..."
-sleep 10
+python prepare_fonts.py
 
-# Prepare fonts for PDF generation
-python foodgram/prepare_fonts.py
-python foodgram/manage.py makemigrations users
-python foodgram/manage.py makemigrations recipes
-# Migrate database
-python foodgram/manage.py migrate
+python manage.py makemigrations
+python manage.py migrate
 
-# Collect static files
-python foodgram/manage.py collectstatic --noinput
-python foodgram/manage.py shell -c "from users.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'admin')"
-
-# Import ingredients from JSON file if needed
+python manage.py collectstatic --noinput
+echo "Создание суперюзера..."
+#python manage.py shell -c "from users.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'admin')"
+python manage.py createsuperuser --noinput --username "admin" --email "admin@example.com" --password "admin" --first_name "admin" --last_name "admin"
 if [ -f "data/ingredients.json" ]; then
-    python foodgram/manage.py import_ingredients data/ingredients.json
-    python foodgram/manage.py load_test_data
+    python manage.py import_ingredients data/ingredients.json
+    python manage.py load_test_data
 fi
 
-# Start server
-cd foodgram
-gunicorn foodgram.wsgi:application --bind 0.0.0.0:8000 
+gunicorn backend.wsgi:application --bind 0.0.0.0:8000 
