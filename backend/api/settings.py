@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'recipes.apps.AppConfig',
+    'api.apps.AppConfig',
     'djoser',
 ]
 
