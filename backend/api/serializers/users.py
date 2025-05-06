@@ -2,7 +2,7 @@ from djoser.serializers import UserSerializer as DjoserUserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ..models import Subscription, User
+from recipes.models import Subscription, User
 
 
 class UserCreateSerializer(serializers.ModelSerializer):

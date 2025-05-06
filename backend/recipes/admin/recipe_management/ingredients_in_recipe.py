@@ -1,5 +1,5 @@
 from django.contrib import admin
-from app.models import IngredientInRecipe
+from recipes.models import IngredientInRecipe
 
 
 @admin.register(IngredientInRecipe)

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-from app.models import Recipe
+from recipes.models import Recipe
 
 
 @admin.register(Recipe)

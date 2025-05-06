@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
-from ..models import Favorite, Recipe, ShoppingCart
+from recipes.models import Favorite, Recipe, ShoppingCart
 from ..core.pagination import PagesPagination
 from ..core.permissions import IsAuthorOrReadOnly
 from ..serializers import (

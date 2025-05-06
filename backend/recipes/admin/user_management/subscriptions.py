@@ -1,5 +1,5 @@
 from django.contrib import admin
-from app.models import Subscription
+from recipes.models import Subscription
 
 
 @admin.register(Subscription)

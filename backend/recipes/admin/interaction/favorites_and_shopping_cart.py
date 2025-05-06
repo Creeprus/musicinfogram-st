@@ -1,5 +1,5 @@
 from django.contrib import admin
-from app.models import Favorite, ShoppingCart
+from recipes.models import Favorite, ShoppingCart
 
 
 @admin.register(Favorite, ShoppingCart)
