@@ -8,9 +8,9 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
 from recipes.models import Favorite, Recipe, ShoppingCart
-from ..core.pagination import PagesPagination
-from ..core.permissions import IsAuthorOrReadOnly
-from ..serializers import (
+from recipes.pagination import PagesPagination
+from recipes.permissions import IsAuthorOrReadOnly
+from recipes.serializers import (
     RecipeSerializer,
     ShortRecipeSerializer,
     RecipeShortLinkSerializer

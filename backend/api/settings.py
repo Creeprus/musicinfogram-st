@@ -15,12 +15,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", default="True").lower() == "true"
+DEBUG = os.getenv("DEBUG", default=True)
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'backend']
+# ALLOWED_HOSTS = os.env.get("ALLOWED_HOSTS", default=[
+#     'localhost',
+#     '127.0.0.1',
+#     'backend'])
+
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(',')
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
@@ -82,7 +84,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'api.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
@@ -156,15 +158,15 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'api.core.pagination.PagesPagination',
+    'DEFAULT_PAGINATION_CLASS': 'recipes.pagination.PagesPagination',
     'PAGE_SIZE': 6,
 }
 
 DJOSER = {
     'SERIALIZERS': {
-        'user_create': 'api.serializers.UserCreateSerializer',
-        'user': 'api.serializers.UserSerializer',
-        'current_user': 'api.serializers.UserSerializer',
+        'user_create': 'recipes.serializers.UserCreateSerializer',
+        'user': 'recipes.serializers.UserSerializer',
+        'current_user': 'recipes.serializers.UserSerializer',
     },
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],

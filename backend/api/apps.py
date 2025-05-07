@@ -5,4 +5,4 @@ class AppConfig(AppConfig):
     """Класс конфигурации приложения."""
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'api'
-    verbose_name = 'Api'
+    verbose_name = 'API'

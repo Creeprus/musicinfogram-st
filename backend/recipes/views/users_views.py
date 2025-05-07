@@ -10,8 +10,8 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, NotAuthenticated
 
 from recipes.models import Subscription, User
-from ..core.pagination import PagesPagination
-from ..serializers import (
+from recipes.pagination import PagesPagination
+from recipes.serializers import (
     UserSerializer,
     SubscribedUserSerializer,
 )
