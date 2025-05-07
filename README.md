@@ -59,14 +59,20 @@
    cd infra
    docker-compose up -d --build
    ```
-3.1. Проект при сборке автоматически заполняет базу ингредиентами, тестовыми данными и суперпользователем. При нужде это можно сделать вручную
+Проект при сборке автоматически заполняет базу ингредиентами, тестовыми данными и суперпользователем. При нужде это можно сделать вручную
 
-3.2. Команда для ручного заполнения: docker-compose exec backend python manage.py import_ingredients /app/data/ingredients.json 
-
-3.3. Команда для заполнения тестовыми данными (могут сразу не отобразится на верстке): docker-compose exec backend python manage.py load_test_data
-
-3.4 Команда для создания суперпользователя: docker-compose exec backend python manage.py createsuperuser --noinput --username "admin" --email "admin@example.com" --password "admin" --first_name "admin" --last_name "admin"
-
+3.1. Команда для ручного заполнения: 
+```
+docker-compose exec backend python manage.py import_ingredients /app/data/ingredients.json 
+```
+3.2. Команда для заполнения тестовыми данными (могут сразу не отобразится на верстке): 
+```
+docker-compose exec backend python manage.py load_test_data
+```
+3.3 Команда для создания суперпользователя: 
+```
+docker-compose exec backend python manage.py createsuperuser --noinput --username "admin" --email "admin@example.com" --password "admin" --first_name "admin" --last_name "admin"
+```
 4. Проект будет доступен по адресу http://localhost/ или 127.0.0.1:80/
 
 5. Админка будет доступна по адресу https://localhost/admin или http://localhost:8000/admin/
