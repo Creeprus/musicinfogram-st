@@ -16,4 +16,4 @@ if [ -f "data/ingredients.json" ]; then
     python manage.py load_test_data
 fi
 
-gunicorn api.wsgi:application --bind 0.0.0.0:8000 
+gunicorn foodgram.wsgi:application --bind 0.0.0.0:8000 

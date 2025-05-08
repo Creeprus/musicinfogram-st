@@ -51,7 +51,7 @@
    DB_HOST=db
    DB_PORT=5432
    DEBUG=True
-   ALLOWED_HOSTS=['127.0.0.1','localhost','backend']
+   ALLOWED_HOSTS=127.0.0.1,localhost,backend
    ```
 
 3. Запустите Docker Compose:

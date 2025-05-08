@@ -1,20 +1,49 @@
+from rest_framework import viewsets
+
+from recipes.models import Ingredient
+from api.serializers import IngredientSerializer
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
-
+from rest_framework.exceptions import ValidationError, NotAuthenticated
 from recipes.models import Favorite, Recipe, ShoppingCart
-from recipes.pagination import PagesPagination
-from recipes.permissions import IsAuthorOrReadOnly
-from recipes.serializers import (
+from .pagination import PagesPagination
+from .permissions import IsAuthorOrReadOnly
+from .serializers import (
     RecipeSerializer,
     ShortRecipeSerializer,
     RecipeShortLinkSerializer
 )
+from recipes.models import Subscription, User
+from .pagination import PagesPagination
+from .serializers import (
+    UserSerializer,
+    SubscribedUserSerializer,
+)
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly
+)
+
+
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet, описывающий работу с ингредиентами"""
+
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        """Метод для получения ингредиентов по имени"""
+        name = self.request.query_params.get('name')
+        if name:
+            return self.queryset.filter(name__startswith=name)
+        return self.queryset
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -167,3 +196,127 @@ class RecipeViewSet(viewsets.ModelViewSet):
             context={'request': request}
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserViewSet(DjoserUserViewSet):
+    """ViewSet, описывающий работу с пользователями и подписками"""
+
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    pagination_class = PagesPagination
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_permissions(self):
+        """Переопределение разрешений для метода me"""
+        if self.action == 'me':
+            return [IsAuthenticated()]
+        return super().get_permissions()
+
+    @action(
+        detail=False,
+        methods=['get'],
+        url_path='me'
+    )
+    def get_me(self, request):
+        """Метод для получения текущего пользователя"""
+        if not request.user.is_authenticated:
+            raise NotAuthenticated()
+        return Response(self.get_serializer(request.user).data)
+
+    @action(detail=False, methods=['put', 'delete'], url_path='me/avatar')
+    def change_avatar(self, request):
+        """Метод для смены или удаления аватара пользователя"""
+        user = request.user
+        if request.method == 'PUT':
+            if 'avatar' not in request.data:
+                raise ValidationError(
+                    {'avatar': ['Это поле обязательно.']}
+                )
+            serializer = self.get_serializer(
+                user, data=request.data,
+                partial=True
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(
+                {'avatar': serializer.data['avatar']},
+                status=status.HTTP_200_OK
+            )
+        user.avatar.delete()
+        user.save()
+        return Response(
+            {'message': 'Аватар успешно удалён'},
+            status=status.HTTP_204_NO_CONTENT
+        )
+
+    @action(
+        detail=True,
+        methods=['post', 'delete'],
+        url_path='subscribe'
+    )
+    def subscribe_and_unsubscribe(self, request, id=None):
+        """Метод для создания и удаления подписки на авторов"""
+        author = get_object_or_404(User, pk=id)
+        if author == request.user:
+            raise ValidationError(
+                {'error': 'Нельзя подписаться на самого себя'}
+            )
+
+        if request.method == 'POST':
+            _, created = Subscription.objects.get_or_create(
+                user=request.user,
+                author=author
+            )
+
+            if not created:
+                raise ValidationError(
+                    {'errors': 'Подписка уже была оформлена'}
+                )
+
+            return Response(
+                SubscribedUserSerializer(
+                    author,
+                    context={'request': request}
+                ).data,
+                status=status.HTTP_201_CREATED
+            )
+
+        try:
+            subscription = Subscription.objects.get(
+                user=request.user,
+                author=author
+            )
+            subscription.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Subscription.DoesNotExist:
+            raise ValidationError(
+                {'error': 'Подписка не найдена'},
+                code=status.HTTP_400_BAD_REQUEST
+            )
+
+    @action(detail=False, methods=['get'], url_path='subscriptions')
+    def subscriptions(self, request):
+        """Метод для вывода всех авторов, на которых подписан пользователь"""
+        user = request.user
+        subscriptions = (
+            user.users.all()
+            .select_related('author')
+        )
+
+        paginator = PagesPagination()
+        paginator.page_size = request.query_params.get('limit', 6)
+        paginated_subscriptions = paginator.paginate_queryset(
+            subscriptions,
+            request
+        )
+
+        authors = [
+            subscription.author for subscription in paginated_subscriptions
+        ]
+
+        serializer = SubscribedUserSerializer(
+            authors,
+            many=True,
+            context={'request': request}
+        )
+        return paginator.get_paginated_response(serializer.data)
