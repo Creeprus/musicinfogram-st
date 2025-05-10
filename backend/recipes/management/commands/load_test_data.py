@@ -69,7 +69,6 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Пользователи созданы'))
 
         if not options['no_ingredients'] and Ingredient.objects.exists():
-            # Получаем первые несколько ингредиентов для тестовых рецептов
             ingredients = list(Ingredient.objects.all()[:20])
 
             recipes_data = [
