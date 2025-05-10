@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-
+from .permissions import IsAuthorOrReadOnly
 from recipes.models import Ingredient
 from api.serializers import IngredientSerializer
 from django.http import FileResponse

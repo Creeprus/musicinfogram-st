@@ -17,7 +17,7 @@ class FavoriteAndShoppingCartAdmin(admin.ModelAdmin):
     :param list_filter: Поля для фильтрации записей
     :param ordering: Порядок сортировки записей
     """
-
+    @admin.display(description='Тип')
     def get_model_name(self, obj):
         """
         Функция, определяющая тип (избранное или в корзине).
@@ -26,7 +26,6 @@ class FavoriteAndShoppingCartAdmin(admin.ModelAdmin):
         :returns: Название модели, к которой относится запись
         """
         return 'Избранное' if isinstance(obj, Favorite) else 'Корзина покупок'
-    get_model_name.short_description = 'Тип'
 
     list_display = ('id', 'user', 'recipe', 'get_model_name', 'created_at')
     search_fields = ('user__email', 'user__username', 'recipe__name')
@@ -51,6 +50,7 @@ class IngredientAdmin(admin.ModelAdmin):
     search_fields = ('name', 'measurement_unit')
     ordering = ('name',)
 
+    @admin.display(description='Используется в рецептах')
     def get_recipe_count(self, obj):
         """
         Функция, которая подсчитывает количество рецептов,
@@ -60,7 +60,6 @@ class IngredientAdmin(admin.ModelAdmin):
         :returns: Количество рецептов с данным ингредиентом
         """
         return obj.recipe_ingredients.count()
-    get_recipe_count.short_description = 'Используется в рецептах'
 
 
 @admin.register(IngredientInRecipe)
@@ -69,6 +68,15 @@ class IngredientInRecipeAdmin(admin.ModelAdmin):
 
     list_display = ('recipe', 'ingredient', 'amount')
     search_fields = ('recipe__name', 'ingredient__name')
+
+
+class IngredientInRecipeInline(admin.TabularInline):
+    """Inline класс для IngredientInRecipe."""
+
+    model = IngredientInRecipe
+    extra = 1
+    min_num = 1
+    validate_min = True
 
 
 @admin.register(Recipe)
@@ -82,6 +90,23 @@ class RecipeAdmin(admin.ModelAdmin):
     :param ordering: Порядок сортировки рецептов
     """
 
+    list_display = (
+        'id',
+        'name',
+        'cooking_time',
+        'author',
+        'get_favorites_count',
+        'get_ingredients_display',
+        'get_image_display',
+        'created_at',
+    )
+
+    inlines = [IngredientInRecipeInline]
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
+    @admin.display(description='Продукты')
     def get_ingredients_display(self, obj):
         """
         Функция, которая возвращает список ингредиентов,
@@ -95,8 +120,8 @@ class RecipeAdmin(admin.ModelAdmin):
             f'{ing.ingredient.measurement_unit}'
             for ing in obj.recipe_ingredients.all()
         ]))
-    get_ingredients_display.short_description = 'Продукты'
 
+    @admin.display(description='Картинка')
     def get_image_display(self, obj):
         """
         Функция, которая возвращает изображение рецепта.
@@ -110,8 +135,8 @@ class RecipeAdmin(admin.ModelAdmin):
                 'width="50" height="50" />'
             )
         return 'Нет изображения'
-    get_image_display.short_description = 'Картинка'
 
+    @admin.display(description='В избранном')
     def get_favorites_count(self, obj):
         """
         Функция, которая подсчитывает количество пользователей,
@@ -121,18 +146,7 @@ class RecipeAdmin(admin.ModelAdmin):
         :Returns: Количество пользователей, добавивших рецепт в избранное
         """
         return obj.favorites.count()
-    get_favorites_count.short_description = 'В избранном'
 
-    list_display = (
-        'id',
-        'name',
-        'cooking_time',
-        'author',
-        'get_favorites_count',
-        'get_ingredients_display',
-        'get_image_display',
-        'created_at',
-    )
     search_fields = ('name', 'author__username', 'author__email', 'text')
     list_filter = ('author', 'created_at', 'cooking_time')
     ordering = ('-created_at',)
@@ -153,35 +167,6 @@ class UserAdmin(BaseUserAdmin):
         ordering: Порядок сортировки пользователей
     """
 
-    def get_full_name_display(self, obj):
-        """Отображает полное имя пользователя (ФИО)"""
-        return f"{obj.first_name} {obj.last_name}"
-    get_full_name_display.short_description = 'ФИО'
-
-    def get_avatar_display(self, obj):
-        """Отображает аватар пользователя в виде миниатюры"""
-        if obj.avatar:
-            return mark_safe(
-                f'<img src="{obj.avatar.url}" width="50" height="50" />'
-            )
-        return 'Нет аватара'
-    get_avatar_display.short_description = 'Аватар'
-
-    def get_recipe_count(self, obj):
-        """Подсчитывает количество рецептов пользователя"""
-        return obj.recipes.count()
-    get_recipe_count.short_description = 'Рецептов'
-
-    def get_subscriptions_count(self, obj):
-        """Подсчитывает количество подписок пользователя"""
-        return obj.users.count()
-    get_subscriptions_count.short_description = 'Подписок'
-
-    def get_subscribers_count(self, obj):
-        """Подсчитывает количество подписчиков пользователя"""
-        return obj.authors.count()
-    get_subscribers_count.short_description = 'Подписчиков'
-
     list_display = (
         'id',
         'username',
@@ -192,6 +177,36 @@ class UserAdmin(BaseUserAdmin):
         'get_subscriptions_count',
         'get_subscribers_count',
     )
+
+    @admin.display(description='ФИО')
+    def get_full_name_display(self, obj):
+        """Отображает полное имя пользователя (ФИО)"""
+        return f"{obj.first_name} {obj.last_name}"
+
+    @admin.display(description='Аватар')
+    def get_avatar_display(self, obj):
+        """Отображает аватар пользователя в виде миниатюры"""
+        if obj.avatar:
+            return mark_safe(
+                f'<img src="{obj.avatar.url}" width="50" height="50" />'
+            )
+        return 'Нет аватара'
+
+    @admin.display(description='Количество рецептов')
+    def get_recipe_count(self, obj):
+        """Подсчитывает количество рецептов пользователя"""
+        return obj.recipes.count()
+
+    @admin.display(description='Количество подписок')
+    def get_subscriptions_count(self, obj):
+        """Подсчитывает количество подписок пользователя"""
+        return obj.users.count()
+
+    @admin.display(description='Количество подписчиков')
+    def get_subscribers_count(self, obj):
+        """Подсчитывает количество подписчиков пользователя"""
+        return obj.authors.count()
+
     search_fields = ('username', 'email', 'first_name', 'last_name')
     list_filter = ('is_staff', 'is_active', 'date_joined')
     ordering = ('id',)
@@ -211,6 +226,15 @@ class SubscriptionAdmin(admin.ModelAdmin):
         ordering: Порядок сортировки подписок
     """
 
+    list_display = (
+        'id',
+        'user',
+        'author',
+        'get_author_recipes_count',
+        'created_at'
+    )
+
+    @admin.display(description='Рецепты у автора')
     def get_author_recipes_count(self, obj):
         """
         Подсчитывает количество рецептов автора.
@@ -220,15 +244,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
             Количество рецептов автора
         """
         return obj.author.recipes.count()
-    get_author_recipes_count.short_description = 'Рецептов у автора'
 
-    list_display = (
-        'id',
-        'user',
-        'author',
-        'get_author_recipes_count',
-        'created_at'
-    )
     search_fields = (
         'user__email',
         'user__username',

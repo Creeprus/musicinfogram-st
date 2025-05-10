@@ -2,27 +2,21 @@ from pathlib import Path
 from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
 import os
+import constants
 
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 SECRET_KEY = os.getenv("SECRET_KEY", get_random_secret_key())
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", default=True)
 
-# ALLOWED_HOSTS = os.env.get("ALLOWED_HOSTS", default=[
-#     'localhost',
-#     '127.0.0.1',
-#     'backend'])
-
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(',')
+ALLOWED_HOSTS = (
+    os.getenv("ALLOWED_HOSTS", "").split(",")
+    if os.getenv("ALLOWED_HOSTS")
+    else ['127.0.0.1', 'localhost', 'backend']
+)
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
@@ -30,7 +24,6 @@ CSRF_TRUSTED_ORIGINS = [
     'http://backend',
 ]
 
-# CORS settings
 CORS_ALLOWED_ORIGINS = [
     'http://localhost',
     'http://127.0.0.1',
@@ -39,7 +32,6 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -86,14 +78,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        # Меняем настройку Django: теперь для работы будет использоваться
-        # бэкенд postgresql
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('POSTGRES_DB', 'postgres'),
         'USER': os.getenv('POSTGRES_USER', 'postgres'),
@@ -103,7 +89,6 @@ DATABASES = {
     }
 }
 
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -119,10 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'UTC'
@@ -131,19 +112,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -159,7 +132,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_PAGINATION_CLASS': 'api.pagination.PagesPagination',
-    'PAGE_SIZE': 6,
+    'PAGE_SIZE': constants.PAGE_SIZE,
 }
 
 DJOSER = {

@@ -52,6 +52,7 @@
    DB_PORT=5432
    DEBUG=True
    ALLOWED_HOSTS=127.0.0.1,localhost,backend
+   DJANGO_SUPERUSER_PASSWORD=admin
    ```
 
 3. Запустите Docker Compose:

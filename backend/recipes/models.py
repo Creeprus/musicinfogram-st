@@ -2,6 +2,7 @@ from django.core.validators import MinValueValidator
 from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+import constants
 
 
 class Ingredient(models.Model):
@@ -14,13 +15,13 @@ class Ingredient(models.Model):
 
     name = models.CharField(
         verbose_name='Название',
-        max_length=128,
+        max_length=constants.INGREDIENT_NAME_MAX_LENGTH,
         help_text='Название ингредиента'
     )
 
     measurement_unit = models.CharField(
         verbose_name='Единица измерения',
-        max_length=64,
+        max_length=constants.INGREDIENT_MEASURE_MAX_LENGTH,
         help_text='Единица измерения количества ингредиента (г, кг, шт.)'
     )
 
@@ -54,33 +55,33 @@ class User(AbstractUser):
 
     email = models.EmailField(
         unique=True,
-        max_length=254,
+        max_length=constants.EMAIL_MAX_LENGTH,
         verbose_name='Email',
         help_text='Уникальный email пользователя'
     )
 
     username = models.CharField(
-        max_length=150,
+        max_length=constants.USERNAME_MAX_LENGTH,
         unique=True,
         verbose_name='Имя пользователя',
         help_text='Уникальное имя пользователя',
         validators=[RegexValidator(
-            regex=r'^[\w.@+-]+$',
+            regex=constants.USERNAME_REGEX,
             message='Username должен содержать только буквы, '
                     'цифры и следующие символы: @ . + -'
         )]
     )
 
     first_name = models.CharField(
-        max_length=150,
-        blank=True,
+        max_length=constants.FIRST_NAME_MAX_LENGTH,
+        blank=False,
         verbose_name='Имя',
         help_text='Имя пользователя'
     )
 
     last_name = models.CharField(
-        max_length=150,
-        blank=True,
+        max_length=constants.LAST_NAME_MAX_LENGTH,
+        blank=False,
         verbose_name='Фамилия',
         help_text='Фамилия пользователя'
     )
@@ -98,7 +99,6 @@ class User(AbstractUser):
         'username',
         'first_name',
         'last_name',
-        'password'
     ]
 
     class Meta:
@@ -127,7 +127,7 @@ class Recipe(models.Model):
 
     name = models.CharField(
         verbose_name='Название',
-        max_length=256,
+        max_length=constants.RECIPE_NAME_MAX_LENGTH,
         help_text='Название рецепта'
     )
 
@@ -138,6 +138,7 @@ class Recipe(models.Model):
 
     ingredients = models.ManyToManyField(
         Ingredient,
+        blank=False,
         through='IngredientInRecipe',
         verbose_name='Ингредиенты',
         help_text='Список необходимых ингредиентов'
@@ -156,12 +157,15 @@ class Recipe(models.Model):
         help_text='Создатель рецепта'
     )
 
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveIntegerField(
         verbose_name='Время приготовления (в минутах)',
         help_text='Время, необходимое для приготовления блюда',
         validators=[
             MinValueValidator(
-                1, 'Время приготовления не может быть менее 1 минуты'
+                constants.RECIPE_MIN_COOKING_TIME,
+                f'Время приготовления не может быть менее '
+                f'{constants.RECIPE_MIN_COOKING_TIME} '
+                'минуты'
             )
         ]
     )
@@ -206,12 +210,13 @@ class IngredientInRecipe(models.Model):
         help_text='Используемый ингредиент'
     )
 
-    amount = models.IntegerField(
+    amount = models.PositiveIntegerField(
         verbose_name='Количество',
         help_text='Количество ингредиента в рецепте',
         validators=[MinValueValidator(
-            1,
-            'Количество ингредиента должно быть больше нуля!'
+            constants.INGREDIENT_IN_RECIPE_MIN_AMOUNT,
+            f'Количество ингредиента должно быть больше'
+            f'{constants.INGREDIENT_IN_RECIPE_MIN_AMOUNT}!'
         )]
     )
 
@@ -283,6 +288,7 @@ class Favorite(UserOfRecipeBase):
         """Meta класс описания объекта"""
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранные'
+        ordering = ['created_at']
 
 
 class ShoppingCart(UserOfRecipeBase):
@@ -294,6 +300,7 @@ class ShoppingCart(UserOfRecipeBase):
         """Meta класс описания объекта"""
         verbose_name = 'Корзина покупок'
         verbose_name_plural = 'Корзины покупок'
+        ordering = ['created_at']
 
 
 class Subscription(models.Model):
@@ -335,6 +342,7 @@ class Subscription(models.Model):
         ]
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
+        ordering = ['created_at']
 
     def __str__(self):
         return f'{self.user} подписан на {self.author}'
