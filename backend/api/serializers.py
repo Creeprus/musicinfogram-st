@@ -279,12 +279,82 @@ class SubscribedUserSerializer(UserSerializer):
         return data
 
 
-class SubscriptionSerializer(serializers.ModelSerializer):
-    """Сериализатор для ответа при создании подписки."""
-    user = serializers.StringRelatedField()
-    author = serializers.StringRelatedField()
-
+class FavoriteSerializer(serializers.ModelSerializer):
+    """Сериализатор для избранных рецептов."""
+    
     class Meta:
-        """Meta класс описания объекта"""
+        model = Favorite
+        fields = ('user', 'recipe')
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=Favorite.objects.all(),
+                fields=('user', 'recipe'),
+                message='Рецепт уже добавлен в избранное'
+            )
+        ]
+    
+    def validate(self, data):
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            raise serializers.ValidationError('Авторизация обязательна')
+        
+        return data
+    
+    def to_representation(self, instance):
+        return ShortRecipeSerializer(
+            instance.recipe,
+            context=self.context
+        ).data
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    """Сериализатор для корзины покупок."""
+    
+    class Meta:
+        model = ShoppingCart
+        fields = ('user', 'recipe')
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=ShoppingCart.objects.all(),
+                fields=('user', 'recipe'),
+                message='Рецепт уже добавлен в список покупок'
+            )
+        ]
+    
+    def validate(self, data):
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            raise serializers.ValidationError('Авторизация обязательна')
+        
+        return data
+    
+    def to_representation(self, instance):
+        return ShortRecipeSerializer(
+            instance.recipe,
+            context=self.context
+        ).data
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    """Сериализатор для подписок."""
+    
+    class Meta:
         model = Subscription
         fields = ('user', 'author')
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=Subscription.objects.all(),
+                fields=('user', 'author'),
+                message='Вы уже подписаны на этого автора'
+            )
+        ]
+    
+    def validate(self, data):
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            raise serializers.ValidationError('Авторизация обязательна')
+        
+        if data['user'] == data['author']:
+            raise serializers.ValidationError('Нельзя подписаться на самого себя')
+        
+        return data
