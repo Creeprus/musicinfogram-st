@@ -11,8 +11,8 @@ services:
 
   backend:
     container_name: foodgram-backend
-    #image: leaderofthebadgers/foodgram-backend:latest
-    build: ../backend/
+    image: leaderofthebadgers/foodgram-backend:latest
+    №build: ../backend/
     restart: always
     depends_on:
       - db

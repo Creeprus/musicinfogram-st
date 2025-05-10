@@ -1,3 +1,4 @@
+from datetime import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -5,21 +6,19 @@ from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError, NotAuthenticated
-from django.http import FileResponse
 from django.shortcuts import get_object_or_404
-from django.db.models import Sum, F
-from django.utils import timezone
 from djoser.views import UserViewSet as DjoserUserViewSet
-
+from django.http import FileResponse
+from django.utils import timezone
 from recipes.models import (Ingredient, Recipe,
                             ShoppingCart, Favorite,
-                            Subscription, User, IngredientInRecipe)
+                            Subscription, User,)
 from .pagination import PagesPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (
     IngredientSerializer,
-    RecipeSerializer,
-    ShortRecipeSerializer,
+    RecipeReadSerializer,
+    RecipeWriteSerializer,
     UserSerializer,
     SubscribedUserSerializer,
     RecipeShortLinkSerializer,
@@ -48,25 +47,43 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     """ViewSet для рецептов"""
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
     pagination_class = PagesPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
+    def get_serializer_class(self):
+        """Выбор сериализатора в зависимости от действия"""
+        if self.action in ('create', 'update', 'partial_update'):
+            return RecipeWriteSerializer
+        if self.action == 'short_link':
+            return RecipeShortLinkSerializer
+        return RecipeReadSerializer
+
     def perform_create(self, serializer):
         """Метод для автоматического указания автора рецепта"""
         serializer.save(author=self.request.user)
 
-    @action(detail=True, methods=['post', 'delete'], url_path='favorite')
-    def change_favorited_recipes(self, request, pk=None):
-        """Метод для добавления или удаления рецепта из избранного"""
-        recipe = get_object_or_404(Recipe, pk=pk)
+    @action(detail=True, methods=['get'])
+    def short_link(self, request, pk=None):
+        """Получение короткой ссылки на рецепт"""
+        recipe = self.get_object()
+        serializer = self.get_serializer(recipe)
+        return Response(serializer.data)
+
+    @action(
+        detail=True,
+        methods=['post', 'delete'],
+        permission_classes=[IsAuthenticated]
+    )
+    def favorite(self, request, pk=None):
+        """Добавление/удаление рецепта в/из избранного"""
+        recipe = self.get_object()
 
         if request.method == 'POST':
-            data = {'user': request.user.id, 'recipe': pk}
             serializer = FavoriteSerializer(
-                data=data, context={'request': request}
+                data={'user': request.user.id, 'recipe': recipe.id},
+                context={'request': request}
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
@@ -81,26 +98,53 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=['post', 'delete'],
-        url_path='shopping_cart'
+        permission_classes=[IsAuthenticated]
     )
-    def change_shopping_cart(self, request, pk=None):
-        """Метод для добавления или удаления рецепта из списка покупок"""
-        recipe = get_object_or_404(Recipe, pk=pk)
+    def shopping_cart(self, request, pk=None):
+        """Добавление/удаление рецепта в/из корзины покупок"""
+        recipe = self.get_object()
 
         if request.method == 'POST':
-            data = {'user': request.user.id, 'recipe': pk}
             serializer = ShoppingCartSerializer(
-                data=data, context={'request': request}
+                data={'user': request.user.id, 'recipe': recipe.id},
+                context={'request': request}
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        shopping_cart = get_object_or_404(
+        cart_item = get_object_or_404(
             ShoppingCart, user=request.user, recipe=recipe
         )
-        shopping_cart.delete()
+        cart_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def _render_shopping_cart(self, ingredient_totals, recipe_names, date):
+        """Формирует текстовый отчет со списком покупок"""
+        from io import BytesIO
+
+        buffer = BytesIO()
+
+        header = f"Список покупок на {date}\n\n"
+        buffer.write(header.encode('utf-8'))
+
+        buffer.write("Рецепты в списке покупок:\n".encode('utf-8'))
+        for recipe_name, author in recipe_names.items():
+            recipe_line = f"- {recipe_name} (автор: {author})\n"
+            buffer.write(recipe_line.encode('utf-8'))
+        buffer.write("\n".encode('utf-8'))
+
+        buffer.write("Ингредиенты для покупки:\n".encode('utf-8'))
+        for i, ((name, unit), amount) in enumerate(
+                sorted(ingredient_totals.items()), 1):
+            ingredient_line = f"{i}. {name} - {amount} {unit}\n"
+            buffer.write(ingredient_line.encode('utf-8'))
+
+        footer = "\nСпасибо за использование сервиса Foodgram!"
+        buffer.write(footer.encode('utf-8'))
+
+        buffer.seek(0)
+        return buffer
 
     @action(
         detail=False,
@@ -110,59 +154,31 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         """Метод для загрузки текстового отчета со списком покупок"""
+        ingredient_totals = {}
+        recipe_names = {}
 
-        ingredients = IngredientInRecipe.objects.filter(
-            recipe__shoppingcarts__user=request.user
-        ).values(
-            'ingredient__name',
-            'ingredient__measurement_unit'
-        ).annotate(
-            total_amount=Sum('amount'),
-            name=F('ingredient__name'),
-            unit=F('ingredient__measurement_unit')
-        ).order_by('ingredient__name')
+        for item in (request.user.
+                     shoppingcarts.all().select_related('recipe')):
+            recipe_names[item.recipe.name] = item.recipe.author.username
+            for ingredient_in_recipe in item.recipe.recipe_ingredients.all():
+                key = (
+                    ingredient_in_recipe.ingredient.name,
+                    ingredient_in_recipe.ingredient.measurement_unit
+                )
+                ingredient_totals[key] = (ingredient_totals.get(key, 0)
+                                          + ingredient_in_recipe.amount)
 
-        recipes = Recipe.objects.filter(
-            shoppingcarts__user=request.user
-        ).values(
-            'name', 'author__username'
-        ).order_by('name')
-
-        date = timezone.now().strftime('%d.%m.%Y')
-        report_lines = [
-            f'Список покупок на {date}:',
-            'Продукты:',
-        ]
-
-        for number, ingredient in enumerate(ingredients, start=1):
-            report_lines.append(
-                f"{number}. {ingredient['name'].capitalize()} "
-                f"({ingredient['unit']}) - {ingredient['total_amount']}"
-            )
-
-        report_lines.append('\nРецепты, для которых нужны эти продукты:')
-        for number, recipe in enumerate(recipes, start=1):
-            report_lines.append(
-                f"{number}. {recipe['name']} (автор: {recipe['author__username']})"
-            )
-
-        report_text = '\n'.join(report_lines)
+        report_text = self._render_shopping_cart(
+            ingredient_totals,
+            recipe_names,
+            timezone.now().strftime('%d.%m.%Y')
+        )
 
         return FileResponse(
             report_text,
             content_type='text/plain',
             filename='shopping_cart.txt'
         )
-
-    @action(detail=True, methods=['get'], url_path='get-link')
-    def get_link(self, request, pk=None):
-        """Получение короткой ссылки на рецепт"""
-        recipe = self.get_object()
-        serializer = RecipeShortLinkSerializer(
-            recipe,
-            context={'request': request}
-        )
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserViewSet(DjoserUserViewSet):
