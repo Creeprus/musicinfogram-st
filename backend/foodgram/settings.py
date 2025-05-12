@@ -13,9 +13,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", get_random_secret_key())
 DEBUG = os.getenv("DEBUG", default=True)
 
 ALLOWED_HOSTS = (
-    os.getenv("ALLOWED_HOSTS", "").split(",")
-    if os.getenv("ALLOWED_HOSTS")
-    else ['127.0.0.1', 'localhost', 'backend']
+    os.getenv("ALLOWED_HOSTS", default='127.0.0.1,localhost').split(",")
 )
 
 CSRF_TRUSTED_ORIGINS = [
@@ -76,7 +74,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 DATABASES = {
     'default': {

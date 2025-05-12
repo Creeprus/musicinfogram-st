@@ -74,14 +74,12 @@ class User(AbstractUser):
 
     first_name = models.CharField(
         max_length=constants.FIRST_NAME_MAX_LENGTH,
-        blank=False,
         verbose_name='Имя',
         help_text='Имя пользователя'
     )
 
     last_name = models.CharField(
         max_length=constants.LAST_NAME_MAX_LENGTH,
-        blank=False,
         verbose_name='Фамилия',
         help_text='Фамилия пользователя'
     )
@@ -138,7 +136,6 @@ class Recipe(models.Model):
 
     ingredients = models.ManyToManyField(
         Ingredient,
-        blank=False,
         through='IngredientInRecipe',
         verbose_name='Ингредиенты',
         help_text='Список необходимых ингредиентов'
@@ -274,6 +271,7 @@ class UserOfRecipeBase(models.Model):
                 name='unique_%(class)s'
             )
         ]
+        ordering = ['created_at']
 
     def __str__(self):
         return f'{self.user} - {self.recipe}'
@@ -288,7 +286,6 @@ class Favorite(UserOfRecipeBase):
         """Meta класс описания объекта"""
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранные'
-        ordering = ['created_at']
 
 
 class ShoppingCart(UserOfRecipeBase):
@@ -300,7 +297,6 @@ class ShoppingCart(UserOfRecipeBase):
         """Meta класс описания объекта"""
         verbose_name = 'Корзина покупок'
         verbose_name_plural = 'Корзины покупок'
-        ordering = ['created_at']
 
 
 class Subscription(models.Model):

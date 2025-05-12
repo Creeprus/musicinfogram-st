@@ -1,4 +1,5 @@
 from datetime import timezone
+from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -12,7 +13,7 @@ from django.http import FileResponse
 from django.utils import timezone
 from recipes.models import (Ingredient, Recipe,
                             ShoppingCart, Favorite,
-                            Subscription, User,)
+                            Subscription, User, IngredientInRecipe)
 from .pagination import PagesPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (
@@ -77,7 +78,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk=None):
-        """Добавление/удаление рецепта в/из избранного"""
+        """Функция для обработки элементов в избранном"""
         recipe = self.get_object()
 
         if request.method == 'POST':
@@ -89,10 +90,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        favorite = get_object_or_404(
+        get_object_or_404(
             Favorite, user=request.user, recipe=recipe
-        )
-        favorite.delete()
+        ).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
@@ -101,7 +101,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def shopping_cart(self, request, pk=None):
-        """Добавление/удаление рецепта в/из корзины покупок"""
+        """Функция для обработки элементов в корзине"""
         recipe = self.get_object()
 
         if request.method == 'POST':
@@ -113,10 +113,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        cart_item = get_object_or_404(
+        get_object_or_404(
             ShoppingCart, user=request.user, recipe=recipe
-        )
-        cart_item.delete()
+        ).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def _render_shopping_cart(self, ingredient_totals, recipe_names, date):
@@ -135,8 +134,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         buffer.write("\n".encode('utf-8'))
 
         buffer.write("Ингредиенты для покупки:\n".encode('utf-8'))
-        for i, ((name, unit), amount) in enumerate(
-                sorted(ingredient_totals.items()), 1):
+        for i, (name, unit, amount) in enumerate(ingredient_totals, 1):
             ingredient_line = f"{i}. {name} - {amount} {unit}\n"
             buffer.write(ingredient_line.encode('utf-8'))
 
@@ -154,19 +152,30 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         """Метод для загрузки текстового отчета со списком покупок"""
-        ingredient_totals = {}
         recipe_names = {}
 
-        for item in (request.user.
-                     shoppingcarts.all().select_related('recipe')):
-            recipe_names[item.recipe.name] = item.recipe.author.username
-            for ingredient_in_recipe in item.recipe.recipe_ingredients.all():
-                key = (
-                    ingredient_in_recipe.ingredient.name,
-                    ingredient_in_recipe.ingredient.measurement_unit
-                )
-                ingredient_totals[key] = (ingredient_totals.get(key, 0)
-                                          + ingredient_in_recipe.amount)
+        recipe_ids = request.user.shoppingcarts.values_list('recipe_id',
+                                                            flat=True)
+
+        recipes_info = Recipe.objects.filter(id__in=recipe_ids).select_related(
+            'author'
+        ).values_list('name', 'author__username')
+
+        for name, author in recipes_info:
+            recipe_names[name] = author
+
+        ingredient_totals = IngredientInRecipe.objects.filter(
+            recipe_id__in=recipe_ids
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(
+            total_amount=Sum('amount')
+        ).order_by('ingredient__name').values_list(
+            'ingredient__name',
+            'ingredient__measurement_unit',
+            'total_amount'
+        )
 
         report_text = self._render_shopping_cart(
             ingredient_totals,
@@ -256,10 +265,9 @@ class UserViewSet(DjoserUserViewSet):
                 status=status.HTTP_201_CREATED
             )
 
-        subscription = get_object_or_404(
+        get_object_or_404(
             Subscription, user=request.user, author=author
-        )
-        subscription.delete()
+        ).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['get'], url_path='subscriptions')
