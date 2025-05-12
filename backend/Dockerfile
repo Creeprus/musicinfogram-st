@@ -16,8 +16,6 @@ RUN mkdir -p /app/data /app/media /app/static /app/fonts
 
 COPY . .
 
-#COPY ../data/ingredients.json /app/data/
-
 RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["/app/entrypoint.sh"] 
