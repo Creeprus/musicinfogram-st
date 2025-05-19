@@ -126,7 +126,7 @@ class Recipe(models.Model):
     name = models.CharField(
         verbose_name='Название',
         max_length=constants.RECIPE_NAME_MAX_LENGTH,
-        help_text='Название рецепта'
+        help_text='Название альбома'
     )
 
     text = models.TextField(
@@ -155,12 +155,12 @@ class Recipe(models.Model):
     )
 
     cooking_time = models.PositiveIntegerField(
-        verbose_name='Время приготовления (в минутах)',
-        help_text='Время, необходимое для приготовления блюда',
+        verbose_name='Общее время альбома (в минутах)',
+        help_text='Время, необходимое для того, чтобы прослушать вест альбом',
         validators=[
             MinValueValidator(
                 constants.RECIPE_MIN_COOKING_TIME,
-                f'Время приготовления не может быть менее '
+                f'Общее время альбома не может быть менее '
                 f'{constants.RECIPE_MIN_COOKING_TIME} '
                 'минуты'
             )

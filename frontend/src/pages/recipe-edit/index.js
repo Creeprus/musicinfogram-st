@@ -51,11 +51,11 @@ const RecipeEdit = ({ onItemDelete }) => {
       ingredientValue.name === "" ||
       !ingredientValue.id
     ) {
-      return setIngredientError("Ингредиент не выбран");
+      return setIngredientError("Жанр не выбран");
     }
 
     if (recipeIngredients.find(({ name }) => name === ingredientValue.name)) {
-      return setIngredientError("Ингредиент уже выбран");
+      return setIngredientError("Жанр уже выбран");
     }
 
     setRecipeIngredients([...recipeIngredients, ingredientValue]);
@@ -135,11 +135,11 @@ const RecipeEdit = ({ onItemDelete }) => {
     <Main>
       <Container>
         <MetaTags>
-          <title>Редактирование рецепта</title>
-          <meta name="description" content="Фудграм - Редактирование рецепта" />
-          <meta property="og:title" content="Редактирование рецепта" />
+          <title>Редактирование альбома</title>
+          <meta name="description" content="Musicgram - Редактирование альбома" />
+          <meta property="og:title" content="Редактирование альбома" />
         </MetaTags>
-        <Title title="Редактирование рецепта" />
+        <Title title="Редактирование альбома" />
         <Form
           className={styles.form}
           onSubmit={(e) => {
@@ -172,7 +172,7 @@ const RecipeEdit = ({ onItemDelete }) => {
                 }
                 if (ingredients) {
                   return setSubmitError({
-                    submitError: `Ингредиенты: ${
+                    submitError: `Жанры: ${
                       ingredients
                         .filter((item) => Object.keys(item).length)
                         .map((item) => {
@@ -184,7 +184,7 @@ const RecipeEdit = ({ onItemDelete }) => {
                 }
                 if (cooking_time) {
                   return setSubmitError({
-                    submitError: `Время готовки: ${cooking_time[0]}`,
+                    submitError: `Общее время альбом: ${cooking_time[0]}`,
                   });
                 }
                 const errors = Object.values(err);
@@ -195,7 +195,7 @@ const RecipeEdit = ({ onItemDelete }) => {
           }}
         >
           <Input
-            label="Название рецепта"
+            label="Название альбома"
             onChange={(e) => {
               setSubmitError({ submitError: "" });
               setIngredientError("");
@@ -208,7 +208,7 @@ const RecipeEdit = ({ onItemDelete }) => {
           <div className={styles.ingredients}>
             <div className={styles.ingredientsInputs}>
               <Input
-                label="Ингредиенты"
+                label="Жанры"
                 className={styles.ingredientsNameInput}
                 inputClassName={styles.ingredientsInput}
                 labelClassName={styles.ingredientsLabel}
@@ -247,9 +247,10 @@ const RecipeEdit = ({ onItemDelete }) => {
                       amount: value,
                     });
                   }}
-                  placeholder={0}
-                  value={ingredientValue.amount}
+                  placeholder={1}
+                  value={1}
                   type="number"
+                  style={{ display: 'none' }}
                 />
                 {ingredientValue.measurement_unit !== "" && (
                   <div className={styles.measurementUnit}>
@@ -324,8 +325,9 @@ const RecipeEdit = ({ onItemDelete }) => {
                   amount: value,
                 });
               }}
-              placeholder={0}
-              value={ingredientValue.amount}
+              placeholder={1}
+              value={1}
+              style={{ display: 'none' }}
             />
             {ingredientValue.measurement_unit !== "" && (
               <div className={styles.measurementUnit}>
@@ -335,7 +337,7 @@ const RecipeEdit = ({ onItemDelete }) => {
           </div>
           <div className={styles.cookingTime}>
             <Input
-              label="Время приготовления"
+              label="Общее время альбома"
               className={styles.ingredientsTimeInput}
               labelClassName={styles.cookingTimeLabel}
               inputClassName={styles.ingredientsTimeValue}
@@ -349,13 +351,13 @@ const RecipeEdit = ({ onItemDelete }) => {
             <div className={styles.cookingTimeUnit}>мин.</div>
           </div>
           <Textarea
-            label="Описание рецепта"
+            label="Список треков в альбоме"
             onChange={(e) => {
               const value = e.target.value;
               setRecipeText(value);
             }}
             value={recipeText}
-            placeholder="Опишите действия"
+            placeholder="Пропишите ссылки и названия треков в альбоме"
           />
           <FileInput
             onChange={(file) => {
