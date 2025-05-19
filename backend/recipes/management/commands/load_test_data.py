@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
-from recipes.models import Ingredient, Recipe, IngredientInRecipe
+from albums.models import Ingredient, Recipe, IngredientInRecipe
 
 User = get_user_model()
 
@@ -14,9 +14,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--no-ingredients',
+            '--no-genres',
             action='store_true',
-            help='Не загружать ингредиенты'
+            help='Не загружать жанры'
         )
 
     @transaction.atomic
@@ -24,10 +24,10 @@ class Command(BaseCommand):
         """Функция handler."""
         self.stdout.write('Создание тестовых данных...')
 
-        if Ingredient.objects.count() == 0 and not options['no_ingredients']:
+        if Ingredient.objects.count() == 0 and not options['no_genres']:
             self.stdout.write(
                 'Ингредиенты отсутствуют. '
-                'Воспользуйтесь командой import_ingredients для их загрузки.'
+                'Воспользуйтесь командой import_genres для их загрузки.'
             )
             return
 
@@ -68,23 +68,23 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS('Пользователи созданы'))
 
-        if not options['no_ingredients'] and Ingredient.objects.exists():
-            ingredients = list(Ingredient.objects.all()[:20])
+        if not options['no_genres'] and Ingredient.objects.exists():
+            genres = list(Ingredient.objects.all()[:20])
 
-            recipes_data = [
+            albums_data = [
                 {
-                    'name': 'Омлет с сыром',
+                    'name': 'SANABI',
                     'text': (
                         'Яичница-болтунья с добавлением сыра. '
                         'Классический завтрак. '
                         'Быстро и вкусно.'
                     ),
-                    'cooking_time': 10,
+                    'cooking_time': 120,
                     'author': created_users[0],
-                    'ingredients': [
-                        (ingredients[0], 2),
-                        (ingredients[1], 100),
-                        (ingredients[2], 20)
+                    'genres': [
+                        (genres[0], 2),
+                        (genres[1], 100),
+                        (genres[2], 20)
                     ]
                 },
                 {
@@ -96,11 +96,11 @@ class Command(BaseCommand):
                     ),
                     'cooking_time': 30,
                     'author': created_users[1],
-                    'ingredients': [
-                        (ingredients[3], 200),
-                        (ingredients[4], 100),
-                        (ingredients[5], 50),
-                        (ingredients[6], 2)
+                    'genres': [
+                        (genres[3], 200),
+                        (genres[4], 100),
+                        (genres[5], 50),
+                        (genres[6], 2)
                     ]
                 },
                 {
@@ -112,33 +112,33 @@ class Command(BaseCommand):
                     ),
                     'cooking_time': 20,
                     'author': created_users[2],
-                    'ingredients': [
-                        (ingredients[7], 100),
-                        (ingredients[8], 150),
-                        (ingredients[9], 50),
-                        (ingredients[10], 30)
+                    'genres': [
+                        (genres[7], 100),
+                        (genres[8], 150),
+                        (genres[9], 50),
+                        (genres[10], 30)
                     ]
                 }
             ]
 
-            for recipe_data in recipes_data:
-                recipe = Recipe.objects.create(
-                    name=recipe_data['name'],
-                    text=recipe_data['text'],
-                    cooking_time=recipe_data['cooking_time'],
-                    author=recipe_data['author']
+            for album_data in albums_data:
+                album = Recipe.objects.create(
+                    name=album_data['name'],
+                    text=album_data['text'],
+                    cooking_time=album_data['cooking_time'],
+                    author=album_data['author']
                 )
 
-                recipe_ingredients = []
-                for ingredient, amount in recipe_data['ingredients']:
-                    recipe_ingredients.append(
+                album_genres = []
+                for ingredient, amount in album_data['genres']:
+                    album_genres.append(
                         IngredientInRecipe(
-                            recipe=recipe,
+                            album=album,
                             ingredient=ingredient,
                             amount=amount
                         )
                     )
-                IngredientInRecipe.objects.bulk_create(recipe_ingredients)
+                IngredientInRecipe.objects.bulk_create(album_genres)
 
             self.stdout.write(self.style.SUCCESS('Рецепты созданы'))
 

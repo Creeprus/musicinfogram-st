@@ -10,8 +10,8 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 echo "Создание суперюзера..."
 python manage.py createsuperuser --noinput --username "admin" --email "admin@example.com" --first_name "admin" --last_name "admin"
-if [ -f "data/ingredients.json" ]; then
-    python manage.py import_ingredients data/ingredients.json
+if [ -f "data/genres.json" ]; then
+    python manage.py import_genres data/genres.json
     python manage.py load_test_data
 fi
 

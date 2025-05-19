@@ -1,6 +1,6 @@
-# Foodgram - «Продуктовый помощник»
+# Musicgram - «Блог для общения любителей музыкальных произведений в игровой индустрии»
 
-[![Foodgram workflow](https://github.com/Creeprus/foodgram-st/actions/workflows/foodgram_workflow.yml)](https://github.com/Creeprus/foodgram-st/actions/workflows/foodgram_workflow.yml)
+[![Musicgram workflow](https://github.com/Creeprus/foodgram-st/actions/workflows/foodgram_workflow.yml)](https://github.com/Creeprus/foodgram-st/actions/workflows/foodgram_workflow.yml)
 
 ## Описание проекта
 
@@ -9,12 +9,12 @@
 ## Функциональность
 
 - Регистрация пользователей и авторизация
-- Создание, редактирование и удаление рецептов (для авторов)
+- Создание, редактирование и удаление альбомов (для авторов)
 - Просмотр рецептов всеми пользователями
-- Подписка на авторов рецептов
-- Добавление рецептов в избранное
-- Добавление рецептов в список покупок
-- Скачивание списка покупок в формате PDF
+- Подписка на авторов альбома
+- Добавление альбомов в избранное
+- Добавление альбомов в список покупок
+- Скачивание списка покупок в формате txt
 - Административный интерфейс для управления данными
 
 ## Технологии
@@ -38,7 +38,7 @@
 
 1. Клонируйте репозиторий:
    ```
-   git clone https://github.com/Creeprus/foodgram-st
+   git clone https://github.com/Creeprus/musicinfogram-st
    cd foodgram-st
    ```
 
@@ -64,7 +64,7 @@
 
 Команда для ручного заполнения: 
    ```
-   docker-compose exec backend python manage.py import_ingredients /app/data/ingredients.json 
+   docker-compose exec backend python manage.py import_genres /app/data/genres.json 
    ```
 Команда для заполнения тестовыми данными (могут сразу не отобразится на верстке): 
 ```
