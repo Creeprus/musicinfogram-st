@@ -11,8 +11,8 @@ services:
 
   backend:
     container_name: musicgram-backend
-    #image: leaderofthebadgers/musicgram-backend:latest
-    build: ../backend/
+    image: leaderofthebadgers/musicgram-backend:latest
+    #build: ../backend/
     restart: always
     depends_on:
       - db
