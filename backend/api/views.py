@@ -127,18 +127,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
         header = f"Список покупок на {date}\n\n"
         buffer.write(header.encode('utf-8'))
 
-        buffer.write("Рецепты в списке покупок:\n".encode('utf-8'))
+        buffer.write("Альбом в списке покупок:\n".encode('utf-8'))
         for recipe_name, author in recipe_names.items():
             recipe_line = f"- {recipe_name} (автор: {author})\n"
             buffer.write(recipe_line.encode('utf-8'))
         buffer.write("\n".encode('utf-8'))
 
-        buffer.write("Ингредиенты для покупки:\n".encode('utf-8'))
+        buffer.write("Жанры:\n".encode('utf-8'))
         for i, (name, unit, amount) in enumerate(ingredient_totals, 1):
             ingredient_line = f"{i}. {name} - {amount} {unit}\n"
             buffer.write(ingredient_line.encode('utf-8'))
 
-        footer = "\nСпасибо за использование сервиса Foodgram!"
+        footer = "\nСпасибо за использование сервиса Musicgram!"
         buffer.write(footer.encode('utf-8'))
 
         buffer.seek(0)

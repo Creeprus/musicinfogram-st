@@ -35,12 +35,12 @@ const HomePage = ({ updateOrders }) => {
   return <Main>
     <Container>
       <MetaTags>
-        <title>Рецепты</title>
-        <meta name="description" content="Фудграм - Рецепты" />
-        <meta property="og:title" content="Рецепты" />
+        <title>Альбомы</title>
+        <meta name="description" content="Musicgram - Альбомы" />
+        <meta property="og:title" content="Альбомы" />
       </MetaTags>
       <div className={styles.title}>
-        <Title title='Рецепты' />
+        <Title title='Альбомы' />
       </div>
       {recipes.length > 0 && <CardList>
         {recipes.map(card => <Card

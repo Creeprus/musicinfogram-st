@@ -2,11 +2,11 @@ import Icons from "../components/icons"
 
 export default [
   {
-    title: 'Рецепты',
+    title: 'Альбомы',
     href: '/recipes',
     auth: false
   }, {
-    title: 'Создать рецепт',
+    title: 'Создать альбом',
     href: '/recipes/create',
     auth: true
   }, {
