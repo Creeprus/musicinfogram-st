@@ -41,4 +41,4 @@ jobs:
         with:
           push: true
           context: ./backend/
-          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram-backend:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/musicgram-backend:latest

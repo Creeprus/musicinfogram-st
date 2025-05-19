@@ -2,7 +2,7 @@ version: '3.3'
 services:
 
   db:
-    container_name: foodgram-db
+    container_name: musicgram-db
     image: postgres:13.0-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
@@ -10,8 +10,8 @@ services:
     restart: always
 
   backend:
-    container_name: foodgram-backend
-    image: leaderofthebadgers/foodgram-backend:latest
+    container_name: musicgram-backend
+    image: leaderofthebadgers/musicgram-backend:latest
     #build: ../backend/
     restart: always
     depends_on:
@@ -27,7 +27,7 @@ services:
       - fonts:/app/fonts/
 
   frontend:
-    container_name: foodgram-front
+    container_name: musicgram-front
     build: ../frontend
     volumes:
       - ../frontend/:/app/result_build/
@@ -35,7 +35,7 @@ services:
       - backend
 
   nginx:
-    container_name: foodgram-proxy
+    container_name: musicgram-proxy
     image: nginx:1.25.4-alpine
     ports:
       - "80:80"
