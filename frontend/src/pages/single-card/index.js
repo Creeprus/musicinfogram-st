@@ -112,7 +112,7 @@ const SingleCard = ({ loadItem, updateOrders }) => {
                   clickHandler={handleCopyLink}
                   className={cn(styles["single-card__save-button"])}
                   data-tooltip-id="tooltip-copy"
-                  data-tooltip-content="Скопировать прямую ссылку на рецепт"
+                  data-tooltip-content="Скопировать прямую ссылку на альбом"
                   data-tooltip-place="top"
                 >
                   <Icons.CopyLinkIcon />
@@ -217,7 +217,7 @@ const SingleCard = ({ loadItem, updateOrders }) => {
                   {is_in_shopping_cart ? (
                     <>
                       <Icons.CheckIcon />
-                      Рецепт добавлен
+                      Альбом добавлен
                     </>
                   ) : (
                     <>
@@ -231,7 +231,7 @@ const SingleCard = ({ loadItem, updateOrders }) => {
                   href={`${url}/edit`}
                   className={styles["single-card__edit"]}
                 >
-                  Редактировать рецепт
+                  Редактировать альбом
                 </Button>
               )}
             </div>

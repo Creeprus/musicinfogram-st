@@ -30,7 +30,7 @@ const Card = ({
             <>
               <LinkComponent href="/signin" title="Войдите" /> или{" "}
               <LinkComponent href="/signup" title="зарегистрируйтесь" />, чтобы
-              сохранить рецепт
+              сохранить альбом
             </>
           }
           onClose={() => {
@@ -94,7 +94,7 @@ const Card = ({
             {is_in_shopping_cart ? (
               <>
                 <Icons.CheckIcon />
-                Рецепт добавлен
+                Альбом добавлен
               </>
             ) : (
               <>

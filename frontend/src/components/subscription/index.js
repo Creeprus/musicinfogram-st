@@ -96,9 +96,9 @@ const Subscription = ({
               <LinkComponent
                 className={styles.subscriptionLink}
                 title={`Еще ${moreRecipes} ${countForm(moreRecipes, [
-                  "рецепт",
-                  "рецепта",
-                  "рецептов",
+                  "альбом",
+                  "альбома",
+                  "альбомов",
                 ])}...`}
                 href={`/user/${id}`}
               />

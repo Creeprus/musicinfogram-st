@@ -108,11 +108,11 @@ const RecipeCreate = ({ onEdit }) => {
     <Main>
       <Container>
         <MetaTags>
-          <title>Создание рецепта</title>
-          <meta name="description" content="Фудграм - Создание рецепта" />
-          <meta property="og:title" content="Создание рецепта" />
+          <title>Создание альбома</title>
+          <meta name="description" content="Musicgram - Создание альбома" />
+          <meta property="og:title" content="Создание альбома" />
         </MetaTags>
-        <Title title="Создание рецепта" />
+        <Title title="Создание альбома" />
         <Form
           className={styles.form}
           onSubmit={(e) => {
@@ -156,7 +156,7 @@ const RecipeCreate = ({ onEdit }) => {
                 }
                 if (cooking_time) {
                   return setSubmitError({
-                    submitError: `Время готовки: ${cooking_time[0]}`,
+                    submitError: `Общее время альбома: ${cooking_time[0]}`,
                   });
                 }
                 const errors = Object.values(err);
@@ -199,7 +199,7 @@ const RecipeCreate = ({ onEdit }) => {
                 value={ingredientValue.name}
               />
               <div className={styles.ingredientsAmountInputContainer}>
-                <p className={styles.amountText}>в количестве </p>
+                <p className={styles.amountText}>встречается </p>
                 <Input
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -218,10 +218,9 @@ const RecipeCreate = ({ onEdit }) => {
                       amount: value,
                     });
                   }}
-                  placeholder={1}
-                  value={1}
+                  placeholder={0}
+                  value={ingredientValue.amount}
                   type="number"
-                  style={{ display: 'none' }}
                 />
                 {ingredientValue.measurement_unit !== "" && (
                   <div className={styles.measurementUnit}>

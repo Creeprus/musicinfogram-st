@@ -219,7 +219,7 @@ const RecipeEdit = ({ onItemDelete }) => {
                   const value = e.target.value;
                   setIngredientValue({
                     ...ingredientValue,
-                    name: value,
+                    name: 1,
                   });
                 }}
                 onFocus={(_) => {
@@ -227,8 +227,8 @@ const RecipeEdit = ({ onItemDelete }) => {
                 }}
                 value={ingredientValue.name}
               />
-              <div className={styles.ingredientsAmountInputContainer}>
-                <p className={styles.amountText}>в количестве </p>
+                <div className={styles.ingredientsAmountInputContainer}>
+                <p className={styles.amountText}>встречается </p>
                 <Input
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -247,10 +247,9 @@ const RecipeEdit = ({ onItemDelete }) => {
                       amount: value,
                     });
                   }}
-                  placeholder={1}
-                  value={1}
+                  placeholder={0}
+                  value={ingredientValue.amount}
                   type="number"
-                  style={{ display: 'none' }}
                 />
                 {ingredientValue.measurement_unit !== "" && (
                   <div className={styles.measurementUnit}>

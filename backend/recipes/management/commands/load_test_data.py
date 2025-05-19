@@ -35,22 +35,22 @@ class Command(BaseCommand):
             {
                 'username': 'Pepega',
                 'email': 'pepega@example.com',
-                'first_name': 'Pepega',
-                'last_name': 'PepegaLord',
+                'first_name': 'Invader',
+                'last_name': '303',
                 'password': 'pepega'
             },
             {
                 'username': 'user1',
                 'email': 'user1@example.com',
-                'first_name': 'Иван',
-                'last_name': 'Иванов',
+                'first_name': 'Hideaki',
+                'last_name': 'Kobayashi',
                 'password': 'user1pass'
             },
             {
                 'username': 'user2',
                 'email': 'user2@example.com',
-                'first_name': 'Петр',
-                'last_name': 'Петров',
+                'first_name': 'Lyn',
+                'last_name': 'Inaizumi',
                 'password': 'user2pass'
             }
         ]
@@ -75,40 +75,38 @@ class Command(BaseCommand):
                 {
                     'name': 'SANABI',
                     'text': (
-                        'Яичница-болтунья с добавлением сыра. '
-                        'Классический завтрак. '
-                        'Быстро и вкусно.'
+                        'Executing The King Order\n'
+                        'SANABI'
                     ),
                     'cooking_time': 120,
                     'author': created_users[0],
                     'genres': [
                         (genres[0], 2),
-                        (genres[1], 100),
-                        (genres[2], 20)
+                        (genres[1], 2),
+                        (genres[2], 3)
                     ]
                 },
                 {
-                    'name': 'Паста карбонара',
+                    'name': 'Like A Dragon: Gaiden',
                     'text': (
-                        'Классическая итальянская паста с беконом, '
-                        'яйцами и сыром пармезан. '
-                        'Быстрое и сытное блюдо.'
+                        'Bring It On\n'
+                        'Obediance '
                     ),
-                    'cooking_time': 30,
+                    'cooking_time': 12,
                     'author': created_users[1],
                     'genres': [
-                        (genres[3], 200),
-                        (genres[4], 100),
-                        (genres[5], 50),
+                        (genres[3], 2),
+                        (genres[4], 3),
+                        (genres[5], 4),
                         (genres[6], 2)
                     ]
                 },
                 {
-                    'name': 'Салат "Цезарь"',
+                    'name': 'Persona 5 Royal',
                     'text': (
-                        'Знаменитый салат с курицей, сухариками, '
-                        'салатом романо и заправкой на основе анчоусов. '
-                        'Отличный выбор для легкого обеда.'
+                        'I Believe\n'
+                        'Last Surprise\n'
+                        'Takeover'
                     ),
                     'cooking_time': 20,
                     'author': created_users[2],
@@ -133,14 +131,14 @@ class Command(BaseCommand):
                 for ingredient, amount in album_data['genres']:
                     album_genres.append(
                         IngredientInRecipe(
-                            album=album,
+                            recipe=album,
                             ingredient=ingredient,
                             amount=amount
                         )
                     )
                 IngredientInRecipe.objects.bulk_create(album_genres)
 
-            self.stdout.write(self.style.SUCCESS('Рецепты созданы'))
+            self.stdout.write(self.style.SUCCESS('Альбомы созданы'))
 
         self.stdout.write(
             self.style.SUCCESS('Тестовые данные успешно созданы')

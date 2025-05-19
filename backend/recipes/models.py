@@ -151,7 +151,7 @@ class Recipe(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор',
-        help_text='Создатель рецепта'
+        help_text='Создатель альбома'
     )
 
     cooking_time = models.PositiveIntegerField(

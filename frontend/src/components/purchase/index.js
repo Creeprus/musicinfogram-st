@@ -19,7 +19,7 @@ const Purchase = ({
 
   return <li className={styles.purchase}>
     {toDelete && <Popup
-      title='Вы уверены, что хотите удалить рецепт?'
+      title='Вы уверены, что хотите удалить альбом?'
       onSubmit={() => {
         handleRemoveFromCart({
           id,

@@ -321,7 +321,7 @@ paths:
       tags:
         - Избранное
     delete:
-      operationId: Удалить рецепт из избранного
+      operationId: Удалить альбом из избранного
       description: 'Доступно только авторизованным пользователям'
       security:
         - Token: [ ]
@@ -329,14 +329,14 @@ paths:
         - name: id
           in: path
           required: true
-          description: "Уникальный идентификатор этого рецепта."
+          description: "Уникальный идентификатор этого альбома."
           schema:
             type: string
       responses:
         '204':
-          description: 'Рецепт успешно удален из избранного'
+          description: 'Альбом успешно удален из избранного'
         '400':
-          description: 'Ошибка удаления из избранного (Например, когда рецепта там не было)'
+          description: 'Ошибка удаления из избранного (Например, когда альбома там не было)'
         '401':
           $ref: '#/components/responses/AuthenticationError'
         '404':
@@ -345,7 +345,7 @@ paths:
         - Избранное
   /api/recipes/{id}/shopping_cart/:
     post:
-      operationId: Добавить рецепт в список покупок
+      operationId: Добавить альбом в список покупок
       description: 'Доступно только авторизованным пользователям'
       security:
         - Token: [ ]
