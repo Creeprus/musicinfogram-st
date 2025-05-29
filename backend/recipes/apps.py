@@ -5,4 +5,4 @@ class AppConfig(AppConfig):
     """Класс конфигурации приложения."""
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'recipes'
-    verbose_name = 'Рецепты'
+    verbose_name = 'Альбомы'

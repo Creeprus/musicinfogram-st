@@ -20,15 +20,15 @@ class Ingredient(models.Model):
     )
 
     measurement_unit = models.CharField(
-        verbose_name='Единица измерения',
+        verbose_name='',
         max_length=constants.INGREDIENT_MEASURE_MAX_LENGTH,
         help_text='Единица измерения количества ингредиента (г, кг, шт.)'
     )
 
     class Meta:
         """Meta класс описания объекта"""
-        verbose_name = 'Продукт'
-        verbose_name_plural = 'Продукты'
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
         constraints = [
             models.UniqueConstraint(
                 fields=['name', 'measurement_unit'],
@@ -137,7 +137,7 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientInRecipe',
-        verbose_name='Ингредиенты',
+        verbose_name='Жанры',
         help_text='Список необходимых ингредиентов'
     )
 
@@ -175,8 +175,8 @@ class Recipe(models.Model):
 
     class Meta:
         """Meta класс описания объекта"""
-        verbose_name = 'Рецепт'
-        verbose_name_plural = 'Рецепты'
+        verbose_name = 'Альбом'
+        verbose_name_plural = 'Альбомы'
         ordering = ('-created_at',)
         default_related_name = 'recipes'
 
@@ -196,14 +196,14 @@ class IngredientInRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        verbose_name='Рецепт',
+        verbose_name='Альбом',
         help_text='Рецепт, в котором используется ингредиент'
     )
 
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        verbose_name='Ингредиент',
+        verbose_name='Жанр',
         help_text='Используемый ингредиент'
     )
 
@@ -219,8 +219,8 @@ class IngredientInRecipe(models.Model):
 
     class Meta:
         """Meta класс описания объекта"""
-        verbose_name = 'Продукт рецепта'
-        verbose_name_plural = 'Продукты рецептов'
+        verbose_name = 'Жанр в альбоме'
+        verbose_name_plural = 'Жанры в альбоме'
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'ingredient'],
@@ -252,8 +252,8 @@ class UserOfRecipeBase(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        verbose_name='Рецепт',
-        related_name='%(class)ss',
+        verbose_name='Альбом',
+        related_name='%(class)sы',
         help_text='Рецепт, с которым взаимодействует пользователь'
     )
     created_at = models.DateTimeField(
@@ -319,7 +319,7 @@ class Subscription(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='authors',
-        verbose_name='Автор рецептов',
+        verbose_name='Автор альбомов',
         help_text='Автор рецептов, на которого подписываются'
     )
     created_at = models.DateTimeField(

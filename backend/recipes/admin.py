@@ -39,10 +39,10 @@ class IngredientAdmin(admin.ModelAdmin):
     """
     Класс, для работы с ингредиентами (админ).
 
-    :param list_display: Поля, отображаемые в списке ингредиентов
-    :param list_filter: Поля для фильтрации ингредиентов
+    :param list_display: Поля, отображаемые в списке жанров
+    :param list_filter: Поля для фильтрации жанров
     :param search_fields: Поля, по которым можно осуществлять поиск
-    :param ordering: Порядок сортировки ингредиентов
+    :param ordering: Порядок сортировки жанров
     """
 
     list_display = ('id', 'name', 'measurement_unit', 'get_recipe_count')
@@ -50,14 +50,14 @@ class IngredientAdmin(admin.ModelAdmin):
     search_fields = ('name', 'measurement_unit')
     ordering = ('name',)
 
-    @admin.display(description='Используется в рецептах')
+    @admin.display(description='Используется в альбомах')
     def get_recipe_count(self, obj):
         """
-        Функция, которая подсчитывает количество рецептов,
-        в котором используется данный игредиент.
+        Функция, которая подсчитывает количество альбомов,
+        в котором используется данный жанр.
 
-        :params obj: Объект ингредиента
-        :returns: Количество рецептов с данным ингредиентом
+        :params obj: Объект жанра
+        :returns: Количество рецептов с данным жанров
         """
         return obj.recipe_ingredients.count()
 
@@ -71,7 +71,7 @@ class IngredientInRecipeAdmin(admin.ModelAdmin):
 
 
 class IngredientInRecipeInline(admin.TabularInline):
-    """Inline класс для IngredientInRecipe."""
+    """Inline класс для GenresInAlbum."""
 
     model = IngredientInRecipe
     extra = 1
@@ -82,12 +82,12 @@ class IngredientInRecipeInline(admin.TabularInline):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """
-    Класс, для работы с рецептами (админ).
+    Класс, для работы с альбомами (админ).
 
-    :param list_display: Поля, отображаемые в списке рецептов
+    :param list_display: Поля, отображаемые в списке альбомов
     :param search_fields: Поля, по которым можно осуществлять поиск
-    :param list_filter: Поля для фильтрации рецептов
-    :param ordering: Порядок сортировки рецептов
+    :param list_filter: Поля для фильтрации альбомов
+    :param ordering: Порядок сортировки альбомов
     """
 
     list_display = (
@@ -95,7 +95,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'name',
         'cooking_time',
         'author',
-        'get_favorites_count',
+        #'get_favorites_count',
         'get_ingredients_display',
         'get_image_display',
         'created_at',
@@ -106,14 +106,14 @@ class RecipeAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
 
-    @admin.display(description='Продукты')
+    @admin.display(description='Жанры')
     def get_ingredients_display(self, obj):
         """
-        Функция, которая возвращает список ингредиентов,
+        Функция, которая возвращает список жанров,
         используемых в рецепте.
 
         :param obj: Объект рецепта
-        :returns: HTML-строка с форматированным списком ингредиентов
+        :returns: HTML-строка с форматированным списком жанров
         """
         return mark_safe('<br>'.join([
             f'{ing.ingredient.name} - {ing.amount} '
@@ -124,9 +124,9 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description='Картинка')
     def get_image_display(self, obj):
         """
-        Функция, которая возвращает изображение рецепта.
+        Функция, которая возвращает изображение альбома.
 
-        :param obj: Объект рецепта
+        :param obj: Объект альбома
         :returns: HTML-тег img или текст, если изображение отсутствует
         """
         if obj.image:
@@ -192,7 +192,7 @@ class UserAdmin(BaseUserAdmin):
             )
         return 'Нет аватара'
 
-    @admin.display(description='Количество рецептов')
+    @admin.display(description='Количество альбомов')
     def get_recipe_count(self, obj):
         """Подсчитывает количество рецептов пользователя"""
         return obj.recipes.count()
@@ -218,7 +218,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
     """
     Административная панель для управления подписками пользователей.
     Предоставляет интерфейс для управления подписками пользователей
-    на авторов рецептов.
+    на авторов альбомов.
     Attributes:
         list_display: Поля, отображаемые в списке подписок
         search_fields: Поля, по которым можно осуществлять поиск
@@ -234,10 +234,10 @@ class SubscriptionAdmin(admin.ModelAdmin):
         'created_at'
     )
 
-    @admin.display(description='Рецепты у автора')
+    @admin.display(description='Альбомы у автора')
     def get_author_recipes_count(self, obj):
         """
-        Подсчитывает количество рецептов автора.
+        Подсчитывает количество альбомов автора.
         Args:
             obj: Объект подписки
         Returns:
