@@ -95,7 +95,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'name',
         'cooking_time',
         'author',
-        #'get_favorites_count',
+        # 'get_favorites_count',
         'get_ingredients_display',
         'get_image_display',
         'created_at',
